@@ -16,6 +16,7 @@ const client = twilio(accountSid, authToken);
 // API route
 app.post("/send-alert", async (req, res) => {
   const temp = req.body.temp;
+  console.log("Request received:", req.body);
 
   console.log("Received temp:", temp);
 
