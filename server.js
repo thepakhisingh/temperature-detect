@@ -7,34 +7,37 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
-// Twilio credentials
-
-const accountSid = "AC42ea1264bdbb2021c1e51de295b11fd9";
-const authToken = "78a77514b4d871351e330a9488f06691";
+// Environment variables (Render)
+const accountSid = process.env.SID;
+const authToken = process.env.AUTH_TOKEN;
 
 const client = twilio(accountSid, authToken);
 
+// API route
 app.post("/send-alert", async (req, res) => {
-
   const temp = req.body.temp;
+
+  console.log("Received temp:", temp);
 
   try {
     await client.messages.create({
       body: `⚠️ Temp is ${temp}°C. Drink water and stay hydrated 💧`,
-      from:"+15705650896",
-      to:"+918107162032"
+      from: process.env.TWILIO_NUMBER,
+      to: process.env.MY_NUMBER
     });
 
     console.log("SMS Sent");
-
     res.send("Message sent");
 
   } catch (error) {
     console.error(error);
-    res.status(500).send("Error");
+    res.status(500).send("Error sending SMS");
   }
 });
 
-app.listen(3000, () => {
-  console.log("Server running on port 3000");
+// Port fix for Render
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log("Server running on port " + PORT);
 });
